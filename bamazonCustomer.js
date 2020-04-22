@@ -23,6 +23,26 @@ connection.connect(function (err) {
   optionMenu();
 });
 
+function optionMenu() {
+  console.log((chalk.green("Welcome to Bamazon!")))
+  inquirer.prompt({
+      type: "list",
+      message: "What would you like to do?",
+      name: "choice",
+      choices: ["Make a purchase", "Exit"]
+  }).then(function (response) {
+      switch (response.choice) {
+          case "Make a purchase":
+              showAllProd();
+              break;
+          case "Exit":
+              connection.end();
+              console.log("You have exited the program. Please come again!")
+              break;
+      }
+  })
+}
+
 function showAllProd() {
   var sqlQuery = "SELECT *FROM products";
   connection.query(sqlQuery, function (err, res) {
@@ -43,11 +63,11 @@ function showAllProd() {
       ]);
     }
     console.log(table.toString() + "\n");
-    connection.end();
+    runShop();
   });
 }
 
-function optionMenu() {
+function runShop() {
   console.log(chalk.green`Welcome to Bamazon!\n $$$$$$$$$$$$$$$$$$$$$$$$$$$$`);
   inquirer
     .prompt([
@@ -85,7 +105,22 @@ function optionMenu() {
       connection.query("SELECT * FROM products WHERE ?", {
         item_id: userResponse.itemID
       }, function (error, response) {
-        console.log(`\nYou have chosen to buy ${userResponse.units}`)
+        console.log(`\nYou have chosen to buy ${userResponse.units} ${response[0].product_name}(s).\n`);
+        if (userResponse.units > response[0].stock_quantity) {
+          console.log(chalk.red`\nOh no. We're all out of that item. Apologies.\n`)
+          optionMenu();
+        } else {
+          console.log(`\nOrder processing...\n`);
+          var totalCost = userResponse.units * response[0].price;
+          var updateStock = response[0].stock_quantity - userResponse.units;
+          var update = "UPDATE products SET stock_quantity = " + updateStock + " WHERE item_id = " + userResponse.itemID;
+          connection.query(update, function (error, response){
+            if (error) throw error;
+            console.log(chalk.cyan`\nYour purchase is complete! Your total comes to: $${totalCost}.\n\n`);
+            console.log(chalk.cyan`We look forward to your next visit!`);
+            connection.end();
+          })
+        }
       }
       )
     });
