@@ -30,5 +30,16 @@ VALUE ("Blue-light Screen Filter", "Tech Accessories", 62.85, 350);
 INSERT INTO products (product_name, department_name, price, stock_quantity)
 VALUE ("Paw Washer", "Pet Suppies", 24.50, 173);
 
+INSERT INTO products (product_name, department_name, price, stock_quantity)
+VALUE ("Hand-held Bidet", "Kitchen and Bathroom", 69.95, 25);
+
+INSERT INTO products (product_name, department_name, price, stock_quantity)
+VALUE ("Nori Seaweed", "Food and Pantry", 18.00, 17);
+
+INSERT INTO products (product_name, department_name, price, stock_quantity)
+VALUE ("Indonesian Fried noodles", "Food and Pantry", 14.75, 450);
+
+INSERT INTO products (product_name, department_name, price, stock_quantity)
+VALUE ("Wifi Extender", "Tech Accessories", 45.00, 32);
 
 
