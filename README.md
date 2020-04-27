@@ -29,8 +29,6 @@ The purpose was to use "backend" technologies such as Node.js along with NPM (No
 
 ### `runShop`
 
-  `node liri.js movie-this <movie name here>`
-
   * This function then asks the customer the ID of the item they would like to buy and the quantity. Then the customer will be presented with a confimation question. If the answer is 'no', the customer is taken back to the beginning of runShop. If the customer answers 'yes', they will then continue through the function which will present:
 
     ```
