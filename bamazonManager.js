@@ -22,11 +22,11 @@ connection.connect(function (err) {
   if (err) throw err;
   console.log(`You are connected as ${connection.threadId}`);
 
-  optionMenu();
+  managerOptionMenu();
 });
 
 // function to show option menu to managers
-const optionMenu = () => {
+const managerOptionMenu = () => {
   console.log(chalk.green("Welcome to Bamazon Manager's Portal."));
   inquirer
     .prompt({
@@ -87,17 +87,39 @@ const showAllProd = () => {
     }
     console.log(table.toString() + "\n");
     // return to manger's option menu
-    optionMenu();
+    managerOptionMenu();
   });
 };
 
+// function to show items with an inventory less than 5 items.
 const showLowInv = () => {
-    const lowInvQuery = "SELECT * FROM products WHERE stock_quantity <= 5";
-    connection.query(lowInvQuery, function (err, res){
-        if (err) throw err;
-        const greeting = chalk.red`\n Here are the current products with low inventory today!\n`;
-        console.log(greeting);
-        console.table(res);
-        optionMenu();
+  const lowInvQuery = "SELECT * FROM products WHERE stock_quantity <= 5";
+  connection.query(lowInvQuery, function (err, res) {
+    if (err) throw err;
+    const greeting = chalk.red`\n Here are the current products with low inventory today!\n`;
+    console.log(greeting);
+    console.table(res);
+    managerOptionMenu();
+  });
+};
+
+const addInv = (inventory) => {
+    console.table(inventory);
+    inquirer
+    .prompt([
+        {
+            type: "input",
+            message: `\n Please enter the ID of the item you would like to add to.`,
+            name: "choice",
+            validate: function(val) {
+                if (isNaN(val) === false) {
+                    return true;
+                }
+                return false;
+            }
+        }
+    ])
+    .then(function(val){
+        
     })
 }
