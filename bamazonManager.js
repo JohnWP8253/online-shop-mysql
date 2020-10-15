@@ -90,3 +90,14 @@ const showAllProd = () => {
     optionMenu();
   });
 };
+
+const showLowInv = () => {
+    const lowInvQuery = "SELECT * FROM products WHERE stock_quantity <= 5";
+    connection.query(lowInvQuery, function (err, res){
+        if (err) throw err;
+        const greeting = chalk.red`\n Here are the current products with low inventory today!\n`;
+        console.log(greeting);
+        console.table(res);
+        optionMenu();
+    })
+}
