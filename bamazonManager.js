@@ -24,6 +24,7 @@ connection.connect(function (err) {
 
   optionMenu();
 });
+
 // function to show option menu to managers
 const optionMenu = () => {
   console.log(chalk.green("Welcome to Bamazon Manager's Portal."));
@@ -40,6 +41,7 @@ const optionMenu = () => {
         "Exit",
       ],
     })
+    // switch case for different options in the function
     .then(function (response) {
       switch (response.choice) {
         case "View Products for Sale":
@@ -60,4 +62,31 @@ const optionMenu = () => {
           break;
       }
     });
+};
+
+const showAllProd = () => {
+  const sqlQuery = "SELECT * FROM products";
+  connection.query(sqlQuery, function (err, res) {
+    if (err) throw err;
+    const greeting = chalk.yellow`\n Here are the current products for sale today.\n`;
+
+    // show greeting variable in terminal
+    console.log(greeting);
+    const table = new Table({
+      head: ["ID", "Product", "Department", "Price", "In Stock"],
+    });
+    // loop through columns to present data
+    for (let i = 0; i < res.length; i++) {
+      table.push([
+        res[i].item_id,
+        res[i].product_name,
+        res[i].department_name,
+        res[i].price,
+        res[i].stock_quantity,
+      ]);
+    }
+    console.log(table.toString() + "\n");
+    // return to manger's option menu
+    optionMenu();
+  });
 };
