@@ -103,23 +103,56 @@ const showLowInv = () => {
   });
 };
 
+
+// prompt function to add inventory to the database
 const addInv = (inventory) => {
-    console.table(inventory);
-    inquirer
+  console.table(inventory);
+  inquirer
     .prompt([
-        {
-            type: "input",
-            message: `\n Please enter the ID of the item you would like to add to.`,
-            name: "choice",
-            validate: function(val) {
-                if (isNaN(val) === false) {
-                    return true;
-                }
-                return false;
-            }
-        }
+      {
+        // prompt to ask manager for the id of the item they want to add
+        type: "input",
+        message: `\n Please enter the ID of the item you would like to add to.`,
+        name: "choice",
+        validate: function (val) {
+          if (isNaN(val) === false) {
+            return true;
+          }
+          return false;
+        },
+      },
     ])
-    .then(function(val){
-        
-    })
-}
+    .then(function (val) {
+
+      let choiceId = parseInt(val.choice);
+      let product = checkInventory(choiceId, inventory);
+
+      // if an item can be found with chosen id
+      if (product) {
+
+        // pass chosen ID to promptManagerForQuantity
+        promptManagerForQuantity(product);
+      } else {
+
+        // Otherwise let manager know doesn't exist and reload managerOptionMenu
+        console.log(`\nThat item is not in our inventory.`);
+        managerOptionMenu();
+      }
+    });
+};
+
+// function to check if chosen prodect exists in inventory
+const checkInventory = (choiceId, inventory) => {
+  for (var i = 0; i < inventory.length; i++) {
+    if (inventory[i].item_id === choiceId) {
+      // If product is a match, return that product
+      return inventory[i];
+    }
+  }
+  // Otherwise return null
+  return null;
+};
+
+
+
+
