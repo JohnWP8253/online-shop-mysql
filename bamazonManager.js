@@ -202,14 +202,21 @@ const promptManagerForQuantity = (product) => {
 const addQuantity = (product, quantity) => {
   connection.query(
     // schema for MySQL to add the quantity to the chosen item
-    "UPDATE products SET stock_quantity = ? WHERE item_id ?",
-    [product.stock_quantity + quantity, product.item_id],
-    function (err, res) {
+    "UPDATE products SET ? WHERE ?",
+    [
+      {
+        stock_quantity: product.stock_quantity + quantity,
+      }, 
+      {
+        item_id: product.item_id,
+      }],
+    function (err) {
+      if (err) throw err;
       // Alert the manager that the addition to the inventory was successful
       console.log(
         `\nSuccessfully added ${quantity} ${product.product_name}s!\n`
       );
-      managerOptionMenu();
+      showAllProd();
     }
   );
 };

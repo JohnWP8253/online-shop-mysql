@@ -44,7 +44,7 @@ Using this funtion, the customer will then see a table with columns that represe
 
 #### Instructions
 
-1. To start the program type in: `node bamazon.js` in the terminal.
+1. To start the program type in: `node bamazonCustomer.js` in the terminal.
 2. To make a purchase, hit enter. If not, use the arrow keys to select exit and hit enter.
 3. If you made the choice to make a purchase, then you will be presented with a table of items for sale.
 4. Choose the item id and write it in and hit enter.
@@ -79,6 +79,8 @@ Using this funtion, the manager will be able to choose and existing product by i
 _ Function that checks of the chosen product exists in the current inventory.
 `promptManagerForQuantity`
 _ Function to ask manager for the quantity to add to the chosen product to the database
+
+The manager will be prompted to choose the ID of the product first, then prompted to add the quantity that they want to add to the database.
 
 ## Screenshots and videos
 
