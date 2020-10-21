@@ -8,9 +8,7 @@ John Pendergrass
 ## Purpose of app
 The purpose was to use "backend" technologies such as Node.js along with NPM (Node Package Manager) libraries in tandem with a relational database management system in order to create an online shop. 
 
-
-
-### App organization
+## App organization
 
 ### bamazonCustomer.js
 #### `optionMenu`
@@ -56,6 +54,28 @@ The purpose was to use "backend" technologies such as Node.js along with NPM (No
   `node bamazonManager.js`
   * This will give the Manager the options for viewing the products for sale, viewing low inventory items less than 5, adding to current inventory, adding a new product for sale, and finally exiting the program. If the customer chooses the all the options, except the 'Exit' option, they will continue on with their options task. If not, the connection will end.
 
+#### `showAllProd`
+
+  Using this funtion, the manager will then see a table with columns that represent the:
+   
+    ```
+      * ID
+      * Product
+      * Department name
+      * Price
+      * Quantity in stock
+    ```
+
+#### `addInv`
+
+  Using this funtion, the manager will be able to choose and existing product by its ID and then add a quantity to it. It uses other functions in order to work and they are: 
+   
+    ```
+    `checkInventory`
+      * Function that checks of the chosen product exists in the current inventory.
+    `promptManagerForQuantity`
+      * Function to ask manager for the quantity to add to the chosen product to the database
+    ```
 
 ## Screenshots and videos
 Link to the video: https://1drv.ms/v/s!AsTLbKRukIAN9DYEzz5MLQEZhEWW?e=ngSTbX
