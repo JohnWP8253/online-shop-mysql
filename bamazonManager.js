@@ -214,44 +214,59 @@ const addQuantity = (product, quantity) => {
 };
 
 const promptManagerForNewProduct = (products) => {
-  inquirer
-    .prompt([
-      // product name prompt
-      {
-        type: "input",
-        name: "product_name",
-        message: "What is the name of the product you want to add?",
-      },
-      // department list prompt
-      {
-        type: "list",
-        name: "department_name",
-        // choices: getDepartments (products),
-        message: "Which department does the product belong to?",
-      },
-      // product price prompt
-      {
-        type: "input",
-        name: "price",
-        message: "How much does it cost?",
-        validate: function (val) {
-          return val > 0;
+  const dptQuery = "SELECT * FROM products";
+  connection.query(dptQuery, function (err, products) {
+    if (err) throw err;
+    inquirer
+      .prompt([
+        // product name prompt
+        {
+          type: "input",
+          name: "product_name",
+          message: "What is the name of the product you want to add?",
         },
-      },
-      // product quantity prompt
-      {
-        type: "input",
-        name: "stock-quantity",
-        message: "How many do you want to add?",
-        validate: function (val) {
-          return val > 0;
+        // department list prompt
+        {
+          type: "list",
+          name: "department_name",
+          // choices: getDepartments (products),
+          choices: function () {
+            let departments = [];
+            for (var i = 0; i < products.length; i++) {
+              departments.push(products[i].department_name);
+            }
+            return departments;
+          },
+          message: "Which department does the product belong to?",
         },
-      },
-    ])
-    .then(addNewProd);
+        // product price prompt
+        {
+          type: "input",
+          name: "price",
+          message: "How much does it cost?",
+          validate: function (val) {
+            return val > 0;
+          },
+        },
+        // product quantity prompt
+        {
+          type: "input",
+          name: "stock_quantity",
+          message: "How many do you want to add?",
+          validate: function (val) {
+            if (val >= 0 && isNaN(val) === false) {
+              return true;
+            }
+            return false;
+          },
+        },
+      ])
+      .then(addNewProd);
+  });
 };
 
 const addNewProd = (val) => {
+  // code with SCHEMA to enter values into the different columns of the table for product name, department, price and quantity
   connection.query(
     "INSERT INTO products (product_name, department_name, price, stock_quantity) VALUES (?, ?, ?, ?)",
     [
@@ -271,8 +286,18 @@ const addNewProd = (val) => {
     function (err) {
       if (err) throw err;
       // Alert the manager that the addition to the inventory was successful
-      console.log(`\nSuccessfully added ${val.product_name} to Bamazon!\n`);
+      console.log(
+        `\nSuccessfully added ${val.stock_quantity} ${val.product_name}s at ${val.price} to the ${val.department_name} department on Bamazon!\n`
+      );
       managerOptionMenu();
     }
   );
 };
+
+// const getDepartments = (products) => {
+//   let departments = [];
+//   for (var i = 0; i < products.length; i++) {
+//     departments.push(products[i].department_name);
+//   }
+//   return departments;
+// };
