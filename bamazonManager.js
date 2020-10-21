@@ -54,7 +54,7 @@ const managerOptionMenu = () => {
           addInv();
           break;
         case "Add New Product":
-          addNew();
+          promptManagerForNewProduct();
           break;
         case "Exit":
           connection.end();
@@ -62,6 +62,23 @@ const managerOptionMenu = () => {
           break;
       }
     });
+};
+// function to keep code DRY for table input to use in other functions in the program
+const tableInput = (res) => {
+  let table = new Table({
+    head: ["ID", "Product", "Department", "Price", "In Stock"],
+  });
+  // loop through columns to present data
+  for (let i = 0; i < res.length; i++) {
+    table.push([
+      res[i].item_id,
+      res[i].product_name,
+      res[i].department_name,
+      res[i].price,
+      res[i].stock_quantity,
+    ]);
+  }
+  console.log(table.toString() + "\n");
 };
 
 const showAllProd = () => {
@@ -77,24 +94,6 @@ const showAllProd = () => {
     managerOptionMenu();
   });
 };
-
-const tableInput = (res) => {
-  let table = new Table ({
-    head: ["ID", "Product", "Department", "Price", "In Stock"],
-  })
-  // loop through columns to present data
-  for (let i = 0; i < res.length; i++) {
-    table.push([
-      res[i].item_id,
-      res[i].product_name,
-      res[i].department_name,
-      res[i].price,
-      res[i].stock_quantity,
-    ]);
-  }
-  console.log(table.toString() + "\n");
-};
-
 
 // function to show items with an inventory less than 5 items.
 const showLowInv = () => {
@@ -114,66 +113,52 @@ const addInv = (inventory) => {
   connection.query(sqlQuery, function (err, res) {
     if (err) throw err;
     tableInput(res);
-    // let allProducts = new Table({
-    //   head: ["ID", "Product", "Department", "Price", "In Stock"],
-    // });
-    // for (let i = 0; i < res.length; i++) {
-    //   allProducts.push([
-    //     res[i].item_id,
-    //     res[i].product_name,
-    //     res[i].department_name,
-    //     res[i].price,
-    //     res[i].stock_quantity,
-    //   ]);
-    // }
     let inventory = res;
     console.log(`\n`);
-    console.table(allProducts.toString() + "\n");
-  
-  // console.table(inventory);
-  inquirer
-    .prompt([
-      {
-        // prompt to ask manager for the id of the item they want to add
-        type: "input",
-        message: `\n Please enter the ID of the item you would like to add to.`,
-        name: "choice",
-        validate: function (val) {
-          if (isNaN(val) === false) {
-            return true;
-          }
-          return false;
+
+    // console.table(inventory);
+    inquirer
+      .prompt([
+        {
+          // prompt to ask manager for the id of the item they want to add
+          type: "input",
+          message: `\n Please enter the ID of the item you would like to add to.`,
+          name: "choice",
+          validate: function (val) {
+            if (isNaN(val) === false) {
+              return true;
+            }
+            return false;
+          },
         },
-      },
-    ])
-    .then(function (val) {
-      let choiceId = parseInt(val.choice);
-      let product = checkInventory(choiceId, inventory);
+      ])
+      .then(function (val) {
+        let choiceId = parseInt(val.choice);
+        let product = checkInventory(choiceId, inventory);
 
-      // if an item can be found with chosen id
-      if (product) {
-        // pass chosen ID to promptManagerForQuantity
-        let selectedProduct = new Table ({
-          head: ["ID", "Product", "Department", "Price", "In Stock"],
-        });
-        selectedProduct.push([
-          product.item_id,
-          product.product_name,
-          product.department_name,
-          product.price,
-          product.stock_quantity,
-        ]);
-        console.table(selectedProduct.toString() + "\n");
-        promptManagerForQuantity(product);
-      } else {
-        // Otherwise let manager know doesn't exist and reload managerOptionMenu
-        console.log(`\nThat item is not in our inventory.`);
-        managerOptionMenu();
-      }
-    });
-  })
+        // if an item can be found with chosen id
+        if (product) {
+          // pass chosen ID to promptManagerForQuantity
+          let selectedProduct = new Table({
+            head: ["ID", "Product", "Department", "Price", "In Stock"],
+          });
+          selectedProduct.push([
+            product.item_id,
+            product.product_name,
+            product.department_name,
+            product.price,
+            product.stock_quantity,
+          ]);
+          console.table(selectedProduct.toString() + "\n");
+          promptManagerForQuantity(product);
+        } else {
+          // Otherwise let manager know doesn't exist and reload managerOptionMenu
+          console.log(`\nThat item is not in our inventory.`);
+          managerOptionMenu();
+        }
+      });
+  });
 };
-
 // function to check if chosen product exists in inventory
 const checkInventory = (choiceId, inventory) => {
   for (let i = 0; i < inventory.length; i++) {
@@ -212,10 +197,11 @@ const addQuantity = (product, quantity) => {
     [
       {
         stock_quantity: product.stock_quantity + quantity,
-      }, 
+      },
       {
         item_id: product.item_id,
-      }],
+      },
+    ],
     function (err) {
       if (err) throw err;
       // Alert the manager that the addition to the inventory was successful
@@ -223,6 +209,70 @@ const addQuantity = (product, quantity) => {
         `\nSuccessfully added ${quantity} ${product.product_name}s!\n`
       );
       showAllProd();
+    }
+  );
+};
+
+const promptManagerForNewProduct = (products) => {
+  inquirer
+    .prompt([
+      // product name prompt
+      {
+        type: "input",
+        name: "product_name",
+        message: "What is the name of the product you want to add?",
+      },
+      // department list prompt
+      {
+        type: "list",
+        name: "department_name",
+        // choices: getDepartments (products),
+        message: "Which department does the product belong to?",
+      },
+      // product price prompt
+      {
+        type: "input",
+        name: "price",
+        message: "How much does it cost?",
+        validate: function (val) {
+          return val > 0;
+        },
+      },
+      // product quantity prompt
+      {
+        type: "input",
+        name: "stock-quantity",
+        message: "How many do you want to add?",
+        validate: function (val) {
+          return val > 0;
+        },
+      },
+    ])
+    .then(addNewProd);
+};
+
+const addNewProd = (val) => {
+  connection.query(
+    "INSERT INTO products (product_name, department_name, price, stock_quantity) VALUES (?, ?, ?, ?)",
+    [
+      {
+        product_name: val.product_name,
+      },
+      {
+        department_name: val.department_name,
+      },
+      {
+        price: val.price,
+      },
+      {
+        stock_quantity: val.stock_quantity,
+      },
+    ],
+    function (err) {
+      if (err) throw err;
+      // Alert the manager that the addition to the inventory was successful
+      console.log(`\nSuccessfully added ${val.product_name} to Bamazon!\n`);
+      managerOptionMenu();
     }
   );
 };
