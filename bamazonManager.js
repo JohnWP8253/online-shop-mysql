@@ -72,24 +72,29 @@ const showAllProd = () => {
 
     // show greeting variable in terminal
     console.log(greeting);
-    const table = new Table({
-      head: ["ID", "Product", "Department", "Price", "In Stock"],
-    });
-    // loop through columns to present data
-    for (let i = 0; i < res.length; i++) {
-      table.push([
-        res[i].item_id,
-        res[i].product_name,
-        res[i].department_name,
-        res[i].price,
-        res[i].stock_quantity,
-      ]);
-    }
-    console.log(table.toString() + "\n");
+    tableInput(res);
     // return to manger's option menu
     managerOptionMenu();
   });
 };
+
+const tableInput = (res) => {
+  let table = new Table ({
+    head: ["ID", "Product", "Department", "Price", "In Stock"],
+  })
+  // loop through columns to present data
+  for (let i = 0; i < res.length; i++) {
+    table.push([
+      res[i].item_id,
+      res[i].product_name,
+      res[i].department_name,
+      res[i].price,
+      res[i].stock_quantity,
+    ]);
+  }
+  console.log(table.toString() + "\n");
+};
+
 
 // function to show items with an inventory less than 5 items.
 const showLowInv = () => {
@@ -108,18 +113,19 @@ const addInv = (inventory) => {
   const sqlQuery = "SELECT * FROM products";
   connection.query(sqlQuery, function (err, res) {
     if (err) throw err;
-    let allProducts = new Table({
-      head: ["ID", "Product", "Department", "Price", "In Stock"],
-    });
-    for (let i = 0; i < res.length; i++) {
-      allProducts.push([
-        res[i].item_id,
-        res[i].product_name,
-        res[i].department_name,
-        res[i].price,
-        res[i].stock_quantity,
-      ]);
-    }
+    tableInput(res);
+    // let allProducts = new Table({
+    //   head: ["ID", "Product", "Department", "Price", "In Stock"],
+    // });
+    // for (let i = 0; i < res.length; i++) {
+    //   allProducts.push([
+    //     res[i].item_id,
+    //     res[i].product_name,
+    //     res[i].department_name,
+    //     res[i].price,
+    //     res[i].stock_quantity,
+    //   ]);
+    // }
     let inventory = res;
     console.log(`\n`);
     console.table(allProducts.toString() + "\n");
