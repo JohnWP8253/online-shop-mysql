@@ -103,10 +103,28 @@ const showLowInv = () => {
   });
 };
 
-
 // prompt function to add inventory to the database
 const addInv = (inventory) => {
-  console.table(inventory);
+  const sqlQuery = "SELECT * FROM products";
+  connection.query(sqlQuery, function (err, res) {
+    if (err) throw err;
+    let allProducts = new Table({
+      head: ["ID", "Product", "Department", "Price", "In Stock"],
+    });
+    for (let i = 0; i < res.length; i++) {
+      allProducts.push([
+        res[i].item_id,
+        res[i].product_name,
+        res[i].department_name,
+        res[i].price,
+        res[i].stock_quantity,
+      ]);
+    }
+    let inventory = res;
+    console.log(`\n`);
+    console.table(allProducts.toString() + "\n");
+  
+  // console.table(inventory);
   inquirer
     .prompt([
       {
@@ -123,27 +141,36 @@ const addInv = (inventory) => {
       },
     ])
     .then(function (val) {
-
       let choiceId = parseInt(val.choice);
       let product = checkInventory(choiceId, inventory);
 
       // if an item can be found with chosen id
       if (product) {
-
         // pass chosen ID to promptManagerForQuantity
+        let selectedProduct = new Table ({
+          head: ["ID", "Product", "Department", "Price", "In Stock"],
+        });
+        selectedProduct.push([
+          product.item_id,
+          product.product_name,
+          product.department_name,
+          product.price,
+          product.stock_quantity,
+        ]);
+        console.table(selectedProduct.toString() + "\n");
         promptManagerForQuantity(product);
       } else {
-
         // Otherwise let manager know doesn't exist and reload managerOptionMenu
         console.log(`\nThat item is not in our inventory.`);
         managerOptionMenu();
       }
     });
+  })
 };
 
-// function to check if chosen prodect exists in inventory
+// function to check if chosen product exists in inventory
 const checkInventory = (choiceId, inventory) => {
-  for (var i = 0; i < inventory.length; i++) {
+  for (let i = 0; i < inventory.length; i++) {
     if (inventory[i].item_id === choiceId) {
       // If product is a match, return that product
       return inventory[i];
@@ -153,6 +180,36 @@ const checkInventory = (choiceId, inventory) => {
   return null;
 };
 
+// function to ask manager for quantity to add to chosen product in database
+const promptManagerForQuantity = (product) => {
+  inquirer
+    .prompt([
+      {
+        type: "input",
+        name: "quantity",
+        message: "How many would you like to add?",
+        validate: function (val) {
+          return val > 0;
+        },
+      },
+    ])
+    .then(function (val) {
+      let quantity = parseInt(val.quantity);
+      addQuantity(product, quantity);
+    });
+};
 
-
-
+const addQuantity = (product, quantity) => {
+  connection.query(
+    // schema for MySQL to add the quantity to the chosen item
+    "UPDATE products SET stock_quantity = ? WHERE item_id ?",
+    [product.stock_quantity + quantity, product.item_id],
+    function (err, res) {
+      // Alert the manager that the addition to the inventory was successful
+      console.log(
+        `\nSuccessfully added ${quantity} ${product.product_name}s!\n`
+      );
+      managerOptionMenu();
+    }
+  );
+};
