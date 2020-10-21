@@ -8,14 +8,18 @@ John Pendergrass
 ## Purpose of app
 The purpose was to use "backend" technologies such as Node.js along with NPM (Node Package Manager) libraries in tandem with a relational database management system in order to create an online shop. 
 
-## App organization
-### `optionMenu`
 
-  `node bamazon.js`
+
+### App organization
+
+### bamazonCustomer.js
+#### `optionMenu`
+
+  `node bamazonCustomer.js`
 
    * This will give the customer the option of making a purchase or exiting the program. If the customer chooses to make a purchase, they will continue on. If not, the connection will end. 
 
-### `showAllProd`
+#### `showAllProd`
 
   Using this funtion, the customer will then see a table with columns that represent the:
    
@@ -27,7 +31,7 @@ The purpose was to use "backend" technologies such as Node.js along with NPM (No
       * Quantity in stock
     ```
 
-### `runShop`
+#### `runShop`
 
   * This function then asks the customer the ID of the item they would like to buy and the quantity. Then the customer will be presented with a confimation question. If the answer is 'no', the customer is taken back to the beginning of runShop. If the customer answers 'yes', they will then continue through the function which will present:
 
@@ -37,13 +41,21 @@ The purpose was to use "backend" technologies such as Node.js along with NPM (No
       * and the total retail price. 
     ```
 
-## Instructions
+#### Instructions
 1. To start the program type in:  `node bamazon.js` in the terminal. 
 2. To make a purchase, hit enter. If not, use the arrow keys to select exit and hit enter.
 3. If you made the choice to make a purchase, then you will be presented with a table of items for sale.
 4. Choose the item id and write it in and hit enter. 
 5. Then choose the amount you would like to purchase. 
 6. You will be asked to confirm: If you would like to change your order, choose 'no' and start over. If you choose yes, you will be presented with the number of items and the total price. 
+
+### bamazonManager.js
+
+#### `managerOptionMenu`
+
+  `node bamazonManager.js`
+  * This will give the Manager the options for viewing the products for sale, viewing low inventory items less than 5, adding to current inventory, adding a new product for sale, and finally exiting the program. If the customer chooses the all the options, except the 'Exit' option, they will continue on with their options task. If not, the connection will end.
+
 
 ## Screenshots and videos
 Link to the video: https://1drv.ms/v/s!AsTLbKRukIAN9DYEzz5MLQEZhEWW?e=ngSTbX
